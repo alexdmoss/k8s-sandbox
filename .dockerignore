@@ -1,0 +1,6 @@
+# assets
+# infra
+k8s/*
+terraform/*
+# local utils
+utils/*

@@ -1,0 +1,5 @@
+FROM nginx:1.13.5-alpine
+COPY config/site.conf /etc/nginx/conf.d/default.conf
+COPY application/ /application/
+EXPOSE 30080
+WORKDIR "/application"

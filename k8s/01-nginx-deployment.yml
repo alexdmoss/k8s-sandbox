@@ -1,0 +1,34 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: frontend-nginx
+  labels:
+    name: frontend-nginx
+  namespace: frontend
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        name: frontend-nginx
+        version: v1
+        timestamp: now3
+    spec:
+      containers:
+      - name: frontend-nginx
+        image: eu.gcr.io/${GCP_PROJECT_NAME}/frontend-nginx:${IMAGE_VERSION}
+        ports:
+        - containerPort: 80
+        workingDir: /application
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/usr/sbin/nginx","-s","quit"]
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 60

@@ -1,0 +1,22 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: frontend-ingress
+  # Assumes a global static ip with the correct name exists:
+  # gcloud compute addresses create photo-album-ip --global
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "frontend-nginx-ip"
+  labels:
+    name: frontend-ingress
+  namespace: frontend
+spec:
+  backend:
+    serviceName: frontend-nginx-svc
+    servicePort: 80
+  tls:
+  - hosts:
+    - demo.moss.work
+    secretName: frontend-nginx-tls
