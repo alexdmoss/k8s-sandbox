@@ -80,13 +80,13 @@ The outcome should be an OAuth Client ID (+ Secret) defined for use with a web a
 
 We're then working with the beta extensions of the GCloud SDK and we're in business:
 
-  > `gcloud auth login`
-  > `gcloud config set project ${GCP_PROJECT_ID}`
-  > `gcloud beta compute backend-services list`
+  gcloud auth login
+  gcloud config set project ${GCP_PROJECT_ID}
+  gcloud beta compute backend-services list
 
 If it is not easy to work out which backend is the relevant one from its port, this may help:
 
-  > `gcloud beta compute backend-services describe ${BACKEND_SERVICE_NAME} --global --format=yaml | grep description:`
+  gcloud beta compute backend-services describe ${BACKEND_SERVICE_NAME} --global --format=yaml | grep description:
 
 Enabling it then becomes a case of update the backend-services config to set iap=enabled, with the relevant OAuth supplied:
 
@@ -96,11 +96,11 @@ Interestingly, when doing it this way I got a warning that HTTP-80 would remain 
 
 With that done, I've now blocked my app. Awesome! But I should probably add some access back in. There is a role  _roles/iap.httpsResourceAccessor_ in IAM for using IAP, which is just wonderful, as we can do things like this:
 
-  > `gcloud projects add-iam-policy-binding PROJECT_ID --member user:${USER_EMAIL_ADDRESS} --role roles/iap.httpsResourceAccessor`
+  gcloud projects add-iam-policy-binding PROJECT_ID --member user:${USER_EMAIL_ADDRESS} --role roles/iap.httpsResourceAccessor
 
-  > In place of `--member user:<value>`, you can specify `group:<value>` and `domain:<value>` too.
+  In place of `--member user:<value>`, you can specify `group:<value>` and `domain:<value>` too.
 
-  > More detail on this command here: https://cloud.google.com/iam/docs/granting-changing-revoking-access
+  More detail on this command here: https://cloud.google.com/iam/docs/granting-changing-revoking-access
 
 This command spits back the IAM Policy which seems a bit odd to me, but at least you can parse it to check success!
 
@@ -128,7 +128,7 @@ This is relatively simple from the command line:
 
   3. Apply the revised policy:
 
-    `gcloud projects set-iam-policy ${GCP_PROJECT_ID} policy.yml`
+    gcloud projects set-iam-policy ${GCP_PROJECT_ID} policy.yml
 
 Log entries then start appearing in Stackdriver - the text **data_access** shows ones flagged by the auditing.
 
@@ -147,6 +147,6 @@ As this requires changes to app code, this is not something that we're likely to
 
 ## To Do
 
-- Test a ServiceAccount
-- Track the user's headers (needs better demo app) - https://cloud.google.com/iap/docs/identity-howto
-- Ping/AD integration
+[] Test a ServiceAccount
+[] Track the user's headers (needs better demo app) - https://cloud.google.com/iap/docs/identity-howto
+[] Ping/AD integration
