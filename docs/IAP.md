@@ -92,8 +92,6 @@ Enabling it then becomes a case of update the backend-services config to set iap
 
       gcloud beta compute backend-services update ${BACKEND_SERVICE_NAME} --global --iap=enabled,oauth2-client-id=${IAP_CLIENT_ID},oauth2-client-secret=${IAP_SECRET}`
 
-Interestingly, when doing it this way I got a warning that HTTP-80 would remain open. It seems that the auto-redirect-to-443 magic is tied to doing it through the console. I have as-yet been unable to figure out how this works.
-
 With that done, I've now blocked my app. Awesome! But I should probably add some access back in. There is a role  _roles/iap.httpsResourceAccessor_ in IAM for using IAP, which is just wonderful, as we can do things like this:
 
       gcloud projects add-iam-policy-binding PROJECT_ID --member user:${USER_EMAIL_ADDRESS} --role roles/iap.httpsResourceAccessor
