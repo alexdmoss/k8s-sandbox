@@ -96,20 +96,22 @@ This is relatively simple from the command line:
 
   1. Retrieve the existing IAM policy:
 
-      `gcloud projects get-iam-policy ${GCP_PROJECT_ID} > policy.yml`
+      > `gcloud projects get-iam-policy ${GCP_PROJECT_ID} > policy.yml`
 
   2. Update policy.yml from above with the following additional configuration:
 
-      `auditConfigs:
+      ```
+      auditConfigs:
       - auditLogConfigs:
         - logType: ADMIN_READ
         - logType: DATA_READ
         - logType: DATA_WRITE
-        service: allServices`
-
+        service: allServices
+      ```
+      
   3. Apply the revised policy:
 
-    `gcloud projects set-iam-policy ${GCP_PROJECT_ID} policy.yml`
+    > `gcloud projects set-iam-policy ${GCP_PROJECT_ID} policy.yml`
 
 Log entries then start appearing in Stackdriver - the text 'data_access' shows ones flagged by the auditing.
 
