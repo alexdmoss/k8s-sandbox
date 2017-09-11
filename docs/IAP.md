@@ -113,7 +113,7 @@ This is relatively simple from the command line:
 
   1. Retrieve the existing IAM policy:
 
-      gcloud projects get-iam-policy ${GCP_PROJECT_ID} > policy.yml
+    gcloud projects get-iam-policy ${GCP_PROJECT_ID} > policy.yml
 
   2. Update policy.yml from above with the following additional configuration:
 
@@ -147,6 +147,6 @@ As this requires changes to app code, this is not something that we're likely to
 
 ## To Do
 
-[] Test a ServiceAccount
-[] Track the user's headers (needs better demo app) - https://cloud.google.com/iap/docs/identity-howto
-[] Ping/AD integration
+- [] Test a ServiceAccount
+- [] Track the user's headers (needs better demo app) - https://cloud.google.com/iap/docs/identity-howto
+- [] Ping/AD integration
