@@ -13,7 +13,7 @@ Accessible via http://demo.moss.work at the moment.
 ## To Do
 
 - force a rewrite to https
-- Terraform a static IP out for it instead of ephemeral
+- Terraform the static IP for the LB
 - Can we Terraform the firewall rule updates for IAP?
 
 ## Things to Try
@@ -22,7 +22,6 @@ Accessible via http://demo.moss.work at the moment.
 02. Helm
 03. Pumba
 04. IAP
-    05. Recycling Pods
 06. Reshifter / Ark
 07. Sumologic
 08. Sysdig
@@ -30,7 +29,6 @@ Accessible via http://demo.moss.work at the moment.
 10. Kubicorn
 11. InfraKit
 12. Seccomp/AppArmor/RBAC
-    13. Kube-lego
 14. Simulate zero-downtime deploys - need some latency in the app to show it completes requests
     - more complex app needed
 15. Liveness/Readiness Probes
@@ -38,3 +36,5 @@ Accessible via http://demo.moss.work at the moment.
 ## The Done Pile
 
 01. Working nginx image deployed across three nodes with some static HTML. Yeah, that was the easy part!
+05. Recycling Pods experimentation
+13. Kube-lego

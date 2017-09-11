@@ -16,14 +16,12 @@ Deploy the kube-lego pod with `kubectl apply -f k8s/`
 
 Set the following in the application's ingress (assumes GCE LoadBalancer):
 
-  `
-  kubernetes.io/tls-acme: "true"
+  `kubernetes.io/tls-acme: "true"
 
   tls:
   - hosts:
     - demo.moss.work
-    secretName: frontend-nginx-tls
-  `
+    secretName: frontend-nginx-tls`
 
 ## Why Kube-Lego?
 
@@ -31,9 +29,8 @@ Set the following in the application's ingress (assumes GCE LoadBalancer):
 - Supports automatic renewals and the automated proof of ownership needed by LetsEncrypt.
 - It’s standalone. The LetsEncrypt code isn’t embedded in the LoadBalancer (Ingress Controller) code itself
 
+## Troubleshooting
 
-
-
-Be aware that gce has a limit of 5 backend services by default, read here how to increase your limits. Use the command below to verify if you're reaching the limits.
+GCE has a limit of 5 backend services by default. Use the command below to verify if you're reaching the limits.
 
   `kubectl get events -w --all-namespaces`
