@@ -8,6 +8,7 @@ A sensible use-case for it would be to protect access to resources that you want
 
 It works by integrating directly with GCP's load balancers - i.e. a move away from these would prevent its use.
 
+
 ---
 
 ## Notes from my Experimentation:
@@ -15,13 +16,16 @@ It works by integrating directly with GCP's load balancers - i.e. a move away fr
 Enabling through the GCP Console is trivial. For your GCP project, navigate to the **IAM > Identity Aware Proxy** section, populate the OAuth Consent screen details (what your user sees to log in), then toggle on for the frontends in question. Access can also be added here to users/groups/domains as required.
 
 
+
 Additionally, in the console, it will warn when configuration allows you to bypass the IAP.
 - I followed its advice and locked down (but didn't delete completely - see notes below) some of the default firewall rules for internal access created by GKE, and my simple website did continue to work fine
+
 
 
 IAP can be individually toggled for any resources surfaced via a load balancer. Naturally, it must be HTTPS-enabled.
 - Intriguingly, it seems to have also set up a redirect somewhere that sends any HTTP traffic to HTTPS automatically. I certainly didn't do it!
 - I haven't been able to successfully track down how it has achieved this - Googling suggests this isn't even a supported feature on GCP! Clever ...
+
 
 
 Members can be:
@@ -33,9 +37,14 @@ Members can be:
 If you access it from a browser which is already logged into G-Suite with a valid email address, it should just work without prompting, which is rather nice.
 If you use another account or a browser without anything like that (or curl it ...) then it should prompt you for authentication with Google.
 
+
+
 The configuration does not seem to be granular enough to allow setting of specific access to specific frontends - the GCP project itself acts as the boundary. This would have interesting ramifications if we wanted different levels of access for different environments defined within a project, for example (although I'm not sure that's a good thing in general!). It could be possible to define custom roles for it, but I did not dig that far.
 
+
+
 I also noted that updates to the access policy (such as adding or removing users) appears to be relatively sluggish (several minutes). Disabling IAP for a service was even more slow (resulting in the access being revoked - and therefore blocking me from accessing the application - before IAP was switched off to allow me in without authentication). There is also a period of time after IAP is switched off where the site throws 500 errors for a time before resolving itself. In other words, this isn't a service you can easily toggle on and off without expecting to wait a little while for things to sort themselves out.
+
 
 ---
 
@@ -44,22 +53,21 @@ I also noted that updates to the access policy (such as adding or removing users
 GCP's IAP console stated the following when switching it on for the first time for my GKE cluster:
 
   > Your settings need to meet the IAP configuration requirements. Use the tutorial to review the issues below, and update your configuration.
-
   > Some IPs can bypass IAP. The following firewall rules allow some IP addresses to bypass IAP's access controls and connect directly to backend service k8s-be-30080--abcf60250ed78e59.
 
-    ```
     default-allow-internal	10.128.0.0/9 - tcp:0-65535; udp:0-65535; icmp
     gke-frontend-cluster-2da5852e-all	10.52.0.0/14 - tcp; udp; icmp; esp; ah; sctp
     gke-frontend-cluster-2da5852e-vms	10.128.0.0/9 - tcp:1-65535; udp:1-65535; icmp
-    ```
 
-I thought I'd see what happens if I locked these down but didn't delete them (so I could restore config more easily!) - I changed all three to only allow icmp. This did not appear to have any immediate negative consequences - including trying it the following day
+I thought I'd see what happens if I locked these down but didn't delete them (so I could restore config more easily!) - I changed all three to only allow icmp. This did not appear to have any immediate negative consequences - including trying it the following day.
+
 
 ---
 
 ## Yes that's all lovely but what about from the command line?
 
 I'm with you on that! Fortunately there are CLI options to enable IAP.
+
 
 
 The first step is to get OAuth set up. I'd already sorted the Consent form bit from my manual experimentation, but for the CLI call we need OAuth credentials. Sadly, the GCP guide has you doing this through the GUI as there is no API for creating an OAuth2.0 Client ID at present, which is unfortunate.
@@ -69,12 +77,11 @@ To do this via a browser, it is here: https://console.developers.google.com/apis
 The outcome should be an OAuth Client ID (+ Secret) defined for use with a web application, with an authorized redirect URI of _https://<ourURL>/_gcp_gatekeeper/authenticate_.
 
 
+
 We're then working with the beta extensions of the GCloud SDK and we're in business:
 
   > `gcloud auth login`
-
   > `gcloud config set project ${GCP_PROJECT_ID}`
-
   > `gcloud beta compute backend-services list`
 
 If it is not easy to work out which backend is the relevant one from its port, this may help:
@@ -97,6 +104,7 @@ With that done, I've now blocked my app. Awesome! But I should probably add some
 
 This command spits back the IAM Policy which seems a bit odd to me, but at least you can parse it to check success!
 
+
 ---
 
 ## Enabling Audit Logging
@@ -105,7 +113,7 @@ This is relatively simple from the command line:
 
   1. Retrieve the existing IAM policy:
 
-    `gcloud projects get-iam-policy ${GCP_PROJECT_ID} > policy.yml`
+    gcloud projects get-iam-policy ${GCP_PROJECT_ID} > policy.yml
 
   2. Update policy.yml from above with the following additional configuration:
 
@@ -124,6 +132,7 @@ This is relatively simple from the command line:
 
 Log entries then start appearing in Stackdriver - the text **data_access** shows ones flagged by the auditing.
 
+
 ---
 
 ## Beyond the Scope
@@ -132,6 +141,7 @@ Google recommend securing your app with signed IAP headers. This protects your a
 
 As this requires changes to app code, this is not something that we're likely to be interested in for my project (we want it as light-touch as possible!), but something to bear in mind.
 - https://cloud.google.com/iap/docs/signed-headers-howto
+
 
 ---
 
